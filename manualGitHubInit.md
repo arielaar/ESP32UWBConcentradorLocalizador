@@ -51,31 +51,51 @@ git push -u origin main
 
 ---
 
-## Parte 2: Solución de Problemas - Empezar de Cero
+## Parte 2: Solución de Problemas Comunes
 
-### ¿Cuándo Usar esta Sección?
+### Problema: `git push` falla con el error `failed to push some refs`
 
-Úsala si al ejecutar `git push` por primera vez, recibes el error `failed to push some refs to '...'`. Esto significa que el repositorio en GitHub no estaba vacío. La solución más limpia es resetear.
+**Causa:** Esto ocurre si el repositorio en GitHub no estaba vacío cuando intentaste subir tu proyecto. Sus historiales son diferentes y Git te detiene por seguridad.
 
-### Paso 2.1: Resetear el Proyecto Local
+**Solución:** La forma más limpia es resetear todo.
 
-Este comando elimina la configuración de Git **sin borrar tus archivos de código**.
+1.  **Resetear Proyecto Local:** Borra la configuración local de Git (sin afectar tu código) con el comando para Windows:
+    ```bash
+    rmdir /s /q .git
+    ```
+2.  **Resetear Repositorio Remoto:** En la web de GitHub, ve a **Settings** > **Danger Zone** > **Delete this repository**. Luego, créalo de nuevo, asegurándote de que esté vacío.
+3.  **Reintentar:** Vuelve a la **Parte 1** y sigue los pasos desde el principio.
 
-```bash
-# Para Windows:
-rmdir /s /q .git
-```
+### Problema: Añadí un archivo a `.gitignore`, pero sigue en GitHub
 
-### Paso 2.2: Resetear el Repositorio Remoto en GitHub
+**Causa:** `.gitignore` solo evita que se suban archivos **nuevos** o que no están siendo rastreados. No afecta a los archivos que ya existen en el historial de Git (que ya fueron subidos con un `commit`).
 
-1.  Ve a la página de tu repositorio en GitHub.
-2.  Ve a **Settings** > **Danger Zone** > **Delete this repository**.
-3.  Confirma la eliminación.
-4.  **Vuelve a crear el repositorio** siguiendo el **Paso 1.1**, asegurándote de que quede vacío.
+**Solución:** Debes decirle a Git explícitamente que deje de rastrear ese archivo, sin borrarlo de tu disco duro.
 
-### Paso 2.3: Reintentar la Subida
+1.  **Asegúrate de que el archivo esté en `.gitignore`:** Verifica que la regla para ignorar el archivo o carpeta (ej. `.vscode/`) esté guardada en tu archivo `.gitignore`.
 
-Ahora que todo está limpio, vuelve al **Paso 1.2** y ejecuta la secuencia de comandos de nuevo.
+2.  **Elimina el archivo del tracking de Git:** Usa el comando `git rm --cached`. La opción `--cached` es crucial, ya que elimina el archivo del repositorio pero lo mantiene en tu PC.
+    ```bash
+    # Para un solo archivo:
+git rm --cached ruta/al/archivo.log
+
+    # Para una carpeta completa (muy común para .vscode):
+git rm -r --cached .vscode
+    ```
+
+3.  **Guarda este cambio (Commit):** La eliminación del tracking es un cambio que debe guardarse en el historial.
+    ```bash
+    git commit -m "Dejar de rastrear archivos de configuración local"
+    ```
+
+4.  **Sube el cambio a GitHub:**
+    ```bash
+    git push
+    ```
+
+Al terminar, el archivo o carpeta desaparecerá de tu repositorio en GitHub, pero seguirá en tu PC para tu uso, y Git no volverá a intentar subirlo.
+
+> **En resumen: `.gitignore` es para el futuro, `git rm --cached` es para corregir el pasado.**
 
 ---
 
@@ -101,9 +121,6 @@ git add .
 
 # Opción B: Agregar solo un archivo específico
 git add src/main.cpp
-
-# Opción C: Agregar todos los archivos de una carpeta
-git add include/
 ```
 
 ### Paso 3.3: Guardar los Cambios (Commit)
@@ -124,39 +141,12 @@ Finalmente, subes todos los commits que has guardado localmente a GitHub.
 git push
 ```
 
-¡Y listo! Tu repositorio en GitHub estará actualizado con tus últimos cambios.
-
 ---
 
 ## Parte 4: Comandos Útiles Adicionales
 
-Aquí tienes otros comandos que te serán de gran utilidad.
-
-- **`git pull`**
-  Descarga los últimos cambios desde GitHub a tu repositorio local. Esencial si trabajas en equipo o desde varias computadoras.
-
-- **`git log`**
-  Muestra el historial de todos los commits que has hecho. Presiona `q` para salir.
-  ```bash
-  # Versión más limpia y visual del historial
-  git log --oneline --graph --decorate
-  ```
-
-- **`git diff`**
-  Muestra los cambios que has hecho en los archivos que **aún no has preparado** con `git add`. Te permite ver las líneas exactas que has añadido o borrado.
-
-- **`git diff --staged`**
-  Muestra los cambios que ya has preparado con `git add` y que están listos para el próximo `commit`.
-
-- **`git restore <archivo>`**
-  Descarta los cambios que has hecho en un archivo y lo devuelve a su última versión guardada (la del último commit). ¡Úsalo con cuidado!
-  ```bash
-  # Deshacer los cambios en main.cpp desde el último commit
-  git restore src/main.cpp
-  ```
-
-- **`git branch <nombre-rama>`**
-  Crea una nueva "rama" o línea de desarrollo. Es una práctica avanzada para trabajar en nuevas funcionalidades sin afectar la versión principal (`main`).
-
-- **`git switch <nombre-rama>`**
-  Te cambia a la rama que especifiques para empezar a trabajar en ella.
+- **`git pull`**: Descarga los últimos cambios desde GitHub a tu repositorio local.
+- **`git log --oneline --graph`**: Muestra el historial de commits de forma compacta y visual.
+- **`git diff`**: Muestra los cambios en archivos que aún no has preparado con `git add`.
+- **`git diff --staged`**: Muestra los cambios que ya están preparados para el próximo commit.
+- **`git restore <archivo>`**: Descarta los cambios en un archivo, devolviéndolo a su última versión guardada.
